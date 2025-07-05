@@ -22,7 +22,7 @@
       width: 100%;
       max-width: 400px;
       height: auto;
-      aspect-ratio: 1 / 1; /* carré responsive */
+      aspect-ratio: 1 / 1;
       display: block;
     }
     .controls {
@@ -40,6 +40,7 @@
       color: white;
       border: none;
       border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -60,7 +61,6 @@
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
     const grid = 20;
-    let count = 0;
     let score = 0;
     let gameOver = false;
 
@@ -78,16 +78,20 @@
       y: 320
     };
 
+    // Vitesse en ms : plus grand = plus lent
+    let lastTime = 0;
+    const speed = 100; // 100ms entre chaque tick
+
     function getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
 
-    function loop() {
-      if (gameOver) return; // Stop le jeu si perdu
+    function loop(time = 0) {
+      if (gameOver) return;
       requestAnimationFrame(loop);
 
-      if (++count < 8) return; // vitesse plus lente
-      count = 0;
+      if (time - lastTime < speed) return;
+      lastTime = time;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -126,7 +130,6 @@
           if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
             gameOver = true;
 
-            // Affiche GAME OVER
             ctx.fillStyle = '#fff';
             ctx.font = '30px Arial';
             ctx.fillText('GAME OVER', canvas.width / 2 - 80, canvas.height / 2);
@@ -139,7 +142,7 @@
         }
       });
 
-      // Score en temps réel
+      // Score
       ctx.fillStyle = '#fff';
       ctx.font = '16px Arial';
       ctx.fillText('Score: ' + score, 10, 20);
@@ -181,6 +184,7 @@
       btn.style.color = 'white';
       btn.style.border = 'none';
       btn.style.borderRadius = '5px';
+      btn.style.cursor = 'pointer';
 
       btn.onclick = () => {
         window.location.reload();
